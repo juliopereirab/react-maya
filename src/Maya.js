@@ -4,12 +4,12 @@ import {MayaCreator} from "./MayaCreator"
 
 
 
-export function Maya({width, height, triangleWidth=100}){
+export function Maya({width, height, triangleWidth=100, color={red:175, green:50, blue:255}, brightness=0.50}){
 
     const index = useTick(60, 0);
     
     const m = useMemo(() => {
-      return new MayaCreator(triangleWidth, width, height);
+      return new MayaCreator(triangleWidth, width, height, color, brightness);
   }, [])
   
     useEffect(() => {

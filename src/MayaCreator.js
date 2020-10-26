@@ -44,7 +44,7 @@ function getRandomSubsection(array, subsectionAmount){
 }
 
 export class MayaCreator{
-    constructor(pointWidth, totalHeight, totalWidth){
+    constructor(pointWidth, totalHeight, totalWidth, color, brightness){
         this.totalHeight = totalHeight
         this.totalWidth = totalWidth
         this.pointWidth = pointWidth;
@@ -56,6 +56,9 @@ export class MayaCreator{
         this.pointsToAlter = getRandomSubsection(keys, Math.floor(keys.length/2.5));
         this.direction = true
         this.totalGap = 0.1
+        this.color = color
+        this.brightness = brightness
+
     }
 
     randomDirection(){
@@ -204,11 +207,12 @@ export class MayaCreator{
 
         triangles = triangles.sort((curr, next) => meanDepth(next.points) - meanDepth(curr.points))
 
-
+        let {red, green, blue} = this.color
+        let {brightness} = this
         for(var triangle of triangles){
             let t = triangle.points
             let m = this.generateShadowIndex(triangle)
-            toInsert += `<polygon points="${t[0].x},${t[0].y} ${t[1].x},${t[1].y} ${t[2].x},${t[2].y}" style="fill:rgb(${195+40*m}, ${135+90*m}, ${75+80*m});stroke:purple;stroke-width:1"" />`
+            toInsert += `<polygon points="${t[0].x},${t[0].y} ${t[1].x},${t[1].y} ${t[2].x},${t[2].y}" style="fill:rgb(${(red*brightness)+(red*brightness)*m}, ${(green*brightness)+(green*brightness)*m}, ${(blue*brightness)+(blue*brightness)*m});stroke:black;stroke-width:1"" />`
         }
         // for(var k of this.pointsToAlter){
         //     let p = m.points[k]
