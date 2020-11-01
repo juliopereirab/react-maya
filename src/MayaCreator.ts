@@ -1,26 +1,36 @@
 
+
 class Point {
-    constructor (x, y, z) {
-        this.x = typeof x === 'number' ? x : 0;
-        this.y = typeof y === 'number' ? y : 0;
-        this.z = typeof z === 'number' ? z : 0;
-        this.baseX = typeof x === 'number' ? x : 0;
-        this.baseY = typeof y === 'number' ? y : 0;                        
+    x: number 
+    y: number
+    z: number
+    baseX: number
+    baseY: number
+
+    constructor (x: number, y: number, z: number) {
+        this.x = x
+        this.y = y
+        this.z = z
+        this.baseX = x
+        this.baseY = y
     }
 }
 
 class Triangle{
-    constructor (direction) {
-        this.direction = typeof "string" ? direction : ""
+    points: Point[]
+    direction: string
+
+    constructor (direction: string) {
+        this.direction = direction
         this.points = []
     }
-    setPoints(points){
+    setPoints(points: Point[]){
         this.points = points
     }
 }
 
     
-const ProjectPoint = (point, middleX, middleY) => {
+const ProjectPoint = (point: Point, middleX: number, middleY: number) => {
 
     let newX = (point.baseX - middleX) * point.z + middleX
     let newY = (point.baseY - middleY) * point.z + middleY
@@ -29,13 +39,13 @@ const ProjectPoint = (point, middleX, middleY) => {
     point.y = newY;
 }
 
-const meanDepth = (triangle) => {
+const meanDepth = (triangle: Point[]) => {
     let p1 = triangle[0].z > triangle[1].z ? triangle[0].z : triangle[1].z
     return p1 > triangle[2].z ? p1 : triangle[2].z
 }
     
-function getRandomSubsection(array, subsectionAmount){
-    let indexes = array.map((el, i) => i);
+function getRandomSubsection(array: any[], subsectionAmount: number){
+    let indexes = Array.from(Array(array.length).keys());
     for(let i=0; i < array.length - subsectionAmount; i++){
     let randomIndex = Math.ceil(Math.random() * array.length) -1
     indexes.splice(randomIndex, 1);
@@ -43,15 +53,29 @@ function getRandomSubsection(array, subsectionAmount){
     return indexes.map(i => array[i]).slice(0, subsectionAmount);
 }
 
+type Color = {red: number, blue: number, green: number}
+
 export class MayaCreator{
-    constructor(pointWidth, totalHeight, totalWidth, color, brightness){
+    totalHeight : number;
+    totalWidth : number;
+    pointWidth : number;
+    tagList : string[];
+    points : {[key: string]: Point}
+    triangles: Triangle[]
+    brightness: number;
+    color: Color
+    direction: boolean
+    totalGap: number
+    pointsToAlter: string[]
+
+    constructor(pointWidth: number, totalHeight: number, totalWidth: number, color: Color, brightness: number){
         this.totalHeight = totalHeight
         this.totalWidth = totalWidth
         this.pointWidth = pointWidth;
         let {produceDuplicateKeys} = this
         this.tagList = [...produceDuplicateKeys(1), ...produceDuplicateKeys(2), ...produceDuplicateKeys(3)]
-        this.points = this.generateCoordinates(pointWidth);
-        this.triangles = this.generateTriangles(pointWidth);
+        this.points = this.generateCoordinates();
+        this.triangles = this.generateTriangles();
         let keys = Object.keys(this.points)
         this.pointsToAlter = getRandomSubsection(keys, Math.floor(keys.length/2.5));
         this.direction = true
@@ -74,7 +98,7 @@ export class MayaCreator{
         }
     }
 
-    generateShadowIndex(triangle) {
+    generateShadowIndex(triangle: Triangle) {
         let halfGap = this.totalGap / 2
         let t = triangle.points
         let top = triangle.direction === "right" ? 1 : 0;
@@ -85,7 +109,7 @@ export class MayaCreator{
         return (angleY + angleX) / 2
     }
 
-    produceDuplicateKeys(n){
+    produceDuplicateKeys(n: number){
         let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         return characters.split("").map(l => l.repeat(n));
     }
@@ -94,7 +118,7 @@ export class MayaCreator{
         let {totalHeight, totalWidth, pointWidth} = this
         var numberOfRows = totalHeight / pointWidth
         var numberOfPointsPerRow = totalWidth / pointWidth
-        let toInsert = {}
+        let toInsert = {} as any
         for(let i=0; i<numberOfRows; i++){
             for(let ii=0; ii<numberOfPointsPerRow; ii++){
                 let gap = ii % 2 == 0 ? pointWidth/1.4 : 0
@@ -104,10 +128,11 @@ export class MayaCreator{
         return toInsert
     }
 
-    generateTriangles(points, w){
-        let triangles = []
-        var numberOfRows = this.totalHeight / w
-        var numberOfPointsPerRow = this.totalWidth / w
+    generateTriangles(){
+        let {points, pointWidth} = this
+        let triangles = [] as Triangle[]
+        var numberOfRows = this.totalHeight / pointWidth
+        var numberOfPointsPerRow = this.totalWidth / pointWidth
 
         for(let i=0; i<numberOfPointsPerRow; i++){
             for(let ii=0; ii<numberOfRows; ii++){
@@ -142,7 +167,7 @@ export class MayaCreator{
         return triangles.filter(t => !t.points.some(p => !p))
     }
 
-    alterPoint(tag, direction, fraction){
+    alterPoint(tag: string, direction: boolean, fraction?: number){
             let r = this.totalGap / (fraction || 20)
             let resultingAmount = direction 
                 ? this.points[tag].z + this.points[tag].z*r  
@@ -157,39 +182,38 @@ export class MayaCreator{
                 : resultingAmount
     }
 
-    setPointArea(direction){
-        // let selectedPoints = getRandomSubsection(Object.keys(this.points), 20);
-        let selectedPoints = ["d8", "e4", "h4", "g7"]
-        let radio = 3
-        // console.log(this.points["d15"], this.points["s50"])
-        for(let p of selectedPoints){
-            let d2 = p === "g7" ? Math.floor(Math.random()*2) === 0 : direction 
-            let m = p.match(/[0-9]+/)
-            let n = parseInt(m && m[0])
-            let letterPosition = this.tagList.indexOf(p.replace(m[0], ""))
-            let consideredLetters = this.tagList.slice(letterPosition - radio, letterPosition+radio+1)
-            let consideredNumbers = Array.from(Array(n+radio+1).keys()).slice(n - radio, n+radio+1)   
-            for(let il in consideredLetters){
-                let letter = consideredLetters[il]
-                let difL = il > letterPosition ? il - letterPosition : letterPosition - il;
-                for(let inum in consideredNumbers){
-                    let num = consideredNumbers[inum]
-                    let difN = inum > n ? inum - n : n - il;
-                    // console.log(`${letter}${num}`)
-                    this.alterPoint(`${letter}${num}`, d2, 1+difN+difL)
-                }
-            }
-        }
+    // setPointArea(direction: boolean){
+    //     // let selectedPoints = getRandomSubsection(Object.keys(this.points), 20);
+    //     let selectedPoints = ["d8", "e4", "h4", "g7"]
+    //     let radio = 3
+    //     // console.log(this.points["d15"], this.points["s50"])
+    //     for(let p of selectedPoints){
+    //         let d2 = p === "g7" ? Math.floor(Math.random()*2) === 0 : direction 
+    //         let m = p.match(/[0-9]+/)
+    //         let n = parseInt(m && m[0])
+    //         let letterPosition = this.tagList.indexOf(p.replace(m[0], ""))
+    //         let consideredLetters = this.tagList.slice(letterPosition - radio, letterPosition+radio+1)
+    //         let consideredNumbers = Array.from(Array(n+radio+1).keys()).slice(n - radio, n+radio+1)   
+    //         for(let il in consideredLetters){
+    //             let letter = consideredLetters[il]
+    //             let difL = il > letterPosition ? il - letterPosition : letterPosition - il;
+    //             for(let inum in consideredNumbers){
+    //                 let num = consideredNumbers[inum]
+    //                 let difN = inum > n ? inum - n : n - il;
+    //                 // console.log(`${letter}${num}`)
+    //                 this.alterPoint(`${letter}${num}`, d2, 1+difN+difL)
+    //             }
+    //         }
+    //     }
+    // }
 
-    }
-
-    alterZValues(direction){
+    alterZValues(direction: boolean){
         this.pointsToAlter.forEach(p => {
             this.alterPoint(p, direction)
         })
     }
 
-    getNewNodes(direction){
+    getNewNodes(direction: boolean){
         // removeAllChildNodes(container)
 
         let toInsert = ""
@@ -203,7 +227,7 @@ export class MayaCreator{
             ProjectPoint(this.points[k], dx, dy)
         });
 
-        let triangles = this.generateTriangles(this.points, this.pointWidth);
+        let triangles = this.generateTriangles();
 
         triangles = triangles.sort((curr, next) => meanDepth(next.points) - meanDepth(curr.points))
 
@@ -222,9 +246,9 @@ export class MayaCreator{
         return toInsert
     }
 
-    render(container, direction){
+    render(container: any, direction: boolean){
 
 
-        container.innerHTML = this.getNewNodes(container, direction)
+        container.innerHTML = this.getNewNodes(direction)
     }
 }

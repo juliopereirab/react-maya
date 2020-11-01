@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react"
 
-export function useTick(delay, initialIndex) {
+export function useTick(delay: number, initialIndex: number) {
     const [tick, setTick] = useState(initialIndex ? initialIndex : 0);
     useEffect(() => {
       const interval = setInterval(() => {
