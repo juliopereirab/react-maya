@@ -19,7 +19,7 @@ export function Maya({width, height, triangleWidth=100, color={red:175, green:50
   }, [])
   
     useEffect(() => {
-      if(index % 50 === 0){
+      if(index % 80 === 0){
         m.randomDirection();
       }
     }, [index])

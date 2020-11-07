@@ -135,23 +135,23 @@ export class MayaCreator{
         var numberOfRows = totalHeight / pointWidth
         var numberOfPointsPerRow = totalWidth / pointWidth
         let toInsert = {} as any
-        for(let i=0; i<numberOfRows; i++){
-            for(let ii=0; ii<numberOfPointsPerRow; ii++){
+        for(let i=0; i<numberOfPointsPerRow; i++){
+            for(let ii=0; ii<numberOfRows; ii++){
                 let gap = ii % 2 == 0 ? pointWidth/1.4 : 0
-                toInsert[this.tagList[i]+ii.toString()] = new Point(ii*pointWidth*1.2, gap+i*pointWidth*1.5-pointWidth, 1)
+                toInsert[this.tagList[i]+ii.toString()] = new Point(ii*pointWidth*1.2-(pointWidth), gap+i*pointWidth*1.5-pointWidth, 1)
             }
         }
         return toInsert
     }
 
     generateTriangles(){
-        let {points, pointWidth} = this
+        let {points, pointWidth, totalHeight, totalWidth} = this
         let triangles = [] as Triangle[]
-        var numberOfRows = this.totalHeight / pointWidth
-        var numberOfPointsPerRow = this.totalWidth / pointWidth
+        var numberOfRows = totalHeight / pointWidth
+        var numberOfPointsPerRow = totalWidth / pointWidth
 
-        for(let i=0; i<numberOfPointsPerRow; i++){
-            for(let ii=0; ii<numberOfRows; ii++){
+        for(let i=0; i<numberOfRows; i++){
+            for(let ii=0; ii<numberOfPointsPerRow; ii++){
                 let newT = new Triangle("right");
                 let newTInverse = new Triangle("left");
                 if(i%2==0){
@@ -208,8 +208,9 @@ export class MayaCreator{
         // removeAllChildNodes(container)
 
         let toInsert = ""
-        let dx = this.totalWidth / 2
-        let dy = this.totalHeight / 2
+        let higherSide = this.totalWidth > this.totalHeight ? this.totalWidth : this.totalHeight
+        let dx = higherSide / 2
+        let dy = higherSide / 2
 
         this.alterZValues();
 
@@ -223,16 +224,18 @@ export class MayaCreator{
 
         let {red, green, blue} = this.color
         let {brightness} = this
+        let strokeColour = `rgba(${red*(brightness*1.4)}, ${green*(brightness*1.4)}, ${blue*(brightness*1.4)}, 0.3)`
         for(var triangle of triangles){
             let t = triangle.points
             let m = this.generateShadowIndex(triangle)
-            toInsert += `<polygon points="${t[0].x},${t[0].y} ${t[1].x},${t[1].y} ${t[2].x},${t[2].y}" style="fill:rgb(${(red*brightness)+(red*brightness)*m}, ${(green*brightness)+(green*brightness)*m}, ${(blue*brightness)+(blue*brightness)*m});stroke:black;stroke-width:1"" />`
+            toInsert += `<polygon points="${t[0].x},${t[0].y} ${t[1].x},${t[1].y} ${t[2].x},${t[2].y}" style="fill:rgb(${(red*brightness)+(red*brightness)*m}, ${(green*brightness)+(green*brightness)*m}, ${(blue*brightness)+(blue*brightness)*m});stroke:${strokeColour};stroke-width:1"" />`
         }
-        // for(var k of this.pointsToAlter){
-        //     let p = m.points[k]
-        //     toInsert += `<circle cx="${p.x}" cy="${p.y}" r="5" stroke="black" fill="green" /> `                        
+        // for(var k of Object.keys(this.points)){
+        //     let p = this.points[k]
+        //     toInsert += `<circle cx="${p.x}" cy="${p.y}" r="5" stroke="black" fill="green" /> `                                    
         //     // toInsert += `<text x="${p.x}" y="${p.y}" fill="red">${k}</text>`
         // }
+
         return toInsert
     }
 
