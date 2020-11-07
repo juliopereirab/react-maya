@@ -99,7 +99,6 @@ export class MayaCreator{
     }
 
     generateShadowIndex(triangle: Triangle) {
-        // let halfGap = this.totalGap / 2
         let t = triangle.points
         let top = triangle.direction === "right" ? 1 : 0;
         let down = triangle.direction === "right" ? 0 : 1;
@@ -123,12 +122,7 @@ export class MayaCreator{
         let angleXGrade = Math.sin(xHeightDif / triangleWidth) * (180 / Math.PI)
         let angleYGrade = Math.sin(yHeightDif / triangleHeight) * (180 / Math.PI)
 
-        // console.log(xHeightDif, triangleWidth, angleXGrade)
-        // console.log(yHeightDif, triangleHeight, angleYGrade)
-
-        // let angleY = (t[down].z - t[top].z + halfGap)/this.totalGap
-        // let angleX = (t[side].z - ((t[top].z + t[down].z) / 2) + halfGap)/this.totalGap
-        return (angleXGrade*4 + angleYGrade*14) / 2
+         return (angleXGrade*4 + angleYGrade*14) / 2
     }
 
     produceDuplicateKeys(n: number){
@@ -189,9 +183,9 @@ export class MayaCreator{
         return triangles.filter(t => !t.points.some(p => !p))
     }
 
-    alterPoint(tag: string, direction: boolean, fraction?: number){
+    alterPoint(tag: string, fraction?: number){
             let r = this.totalGap / (fraction || 20)
-            let resultingAmount = direction 
+            let resultingAmount = this.direction 
                 ? this.points[tag].z + this.points[tag].z*r  
                 :  this.points[tag].z - this.points[tag].z*r
 
@@ -204,46 +198,20 @@ export class MayaCreator{
                 : resultingAmount
     }
 
-    // setPointArea(direction: boolean){
-    //     // let selectedPoints = getRandomSubsection(Object.keys(this.points), 20);
-    //     let selectedPoints = ["d8", "e4", "h4", "g7"]
-    //     let radio = 3
-    //     // console.log(this.points["d15"], this.points["s50"])
-    //     for(let p of selectedPoints){
-    //         let d2 = p === "g7" ? Math.floor(Math.random()*2) === 0 : direction 
-    //         let m = p.match(/[0-9]+/)
-    //         let n = parseInt(m && m[0])
-    //         let letterPosition = this.tagList.indexOf(p.replace(m[0], ""))
-    //         let consideredLetters = this.tagList.slice(letterPosition - radio, letterPosition+radio+1)
-    //         let consideredNumbers = Array.from(Array(n+radio+1).keys()).slice(n - radio, n+radio+1)   
-    //         for(let il in consideredLetters){
-    //             let letter = consideredLetters[il]
-    //             let difL = il > letterPosition ? il - letterPosition : letterPosition - il;
-    //             for(let inum in consideredNumbers){
-    //                 let num = consideredNumbers[inum]
-    //                 let difN = inum > n ? inum - n : n - il;
-    //                 // console.log(`${letter}${num}`)
-    //                 this.alterPoint(`${letter}${num}`, d2, 1+difN+difL)
-    //             }
-    //         }
-    //     }
-    // }
-
-    alterZValues(direction: boolean){
+    alterZValues(){
         this.pointsToAlter.forEach(p => {
-            this.alterPoint(p, direction)
+            this.alterPoint(p)
         })
     }
 
-    getNewNodes(direction: boolean){
+    getNewNodes(){
         // removeAllChildNodes(container)
 
         let toInsert = ""
         let dx = this.totalWidth / 2
         let dy = this.totalHeight / 2
 
-        this.alterZValues(direction);
-        // this.setPointArea(direction);
+        this.alterZValues();
 
         this.pointsToAlter.forEach(k => {
             ProjectPoint(this.points[k], dx, dy)
@@ -268,9 +236,9 @@ export class MayaCreator{
         return toInsert
     }
 
-    render(container: any, direction: boolean){
+    render(container: any){
 
 
-        container.innerHTML = this.getNewNodes(direction)
+        container.innerHTML = this.getNewNodes()
     }
 }

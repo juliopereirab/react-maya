@@ -24,7 +24,7 @@ export function Maya({width, height, triangleWidth=100, color={red:175, green:50
       }
     }, [index])
   
-    let content = m.getNewNodes(m.direction)
+    let content = m.getNewNodes()
   
     return <svg width={width} height={height} style={{backgroundColor: "#333"}} dangerouslySetInnerHTML={{__html: content}}></svg>
   }
