@@ -99,14 +99,36 @@ export class MayaCreator{
     }
 
     generateShadowIndex(triangle: Triangle) {
-        let halfGap = this.totalGap / 2
+        // let halfGap = this.totalGap / 2
         let t = triangle.points
         let top = triangle.direction === "right" ? 1 : 0;
         let down = triangle.direction === "right" ? 0 : 1;
         let side = 2
-        let angleY = (t[down].z - t[top].z + halfGap)/this.totalGap
-        let angleX = (t[side].z - ((t[top].z + t[down].z) / 2) + halfGap)/this.totalGap
-        return (angleY + angleX) / 2
+
+        let sideHeight = t[side].z
+        let baseMidHeight = (t[down].z + t[top].z) / 2
+        
+        let topDiagonalHeight = (t[side].z + t[top].z) / 2
+        let downDiagonalHeight = (t[side].z + t[down].z) / 2
+
+        let topDiagonalY = (t[side].baseY + t[top].baseY) / 2
+        let downDiagonalY = (t[side].baseY + t[down].baseY) / 2        
+
+        let xHeightDif = sideHeight - baseMidHeight 
+        let yHeightDif = topDiagonalHeight - downDiagonalHeight 
+
+        let triangleWidth = t[top].baseX > t[side].baseX ? t[top].baseX - t[side].baseX : t[side].baseX - t[top].baseX
+        let triangleHeight = topDiagonalY - downDiagonalY 
+
+        let angleXGrade = Math.sin(xHeightDif / triangleWidth) * (180 / Math.PI)
+        let angleYGrade = Math.sin(yHeightDif / triangleHeight) * (180 / Math.PI)
+
+        // console.log(xHeightDif, triangleWidth, angleXGrade)
+        // console.log(yHeightDif, triangleHeight, angleYGrade)
+
+        // let angleY = (t[down].z - t[top].z + halfGap)/this.totalGap
+        // let angleX = (t[side].z - ((t[top].z + t[down].z) / 2) + halfGap)/this.totalGap
+        return (angleXGrade*4 + angleYGrade*14) / 2
     }
 
     produceDuplicateKeys(n: number){
