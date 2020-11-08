@@ -4,8 +4,8 @@ class Point {
     x: number 
     y: number
     z: number
-    baseX: number
-    baseY: number
+    readonly baseX: number
+    readonly baseY: number
 
     constructor (x: number, y: number, z: number) {
         this.x = x
@@ -132,13 +132,13 @@ export class MayaCreator{
 
     generateCoordinates(){
         let {totalHeight, totalWidth, pointWidth} = this
-        var numberOfRows = totalHeight / pointWidth
-        var numberOfPointsPerRow = totalWidth / pointWidth
+        var numberOfRows = (totalHeight / pointWidth) + 1
+        var numberOfPointsPerRow = (totalWidth / pointWidth) + 1
         let toInsert = {} as any
         for(let i=0; i<numberOfPointsPerRow; i++){
             for(let ii=0; ii<numberOfRows; ii++){
                 let gap = ii % 2 == 0 ? pointWidth/1.4 : 0
-                toInsert[this.tagList[i]+ii.toString()] = new Point(ii*pointWidth*1.2-(pointWidth), gap+i*pointWidth*1.5-pointWidth, 1)
+                toInsert[this.tagList[i]+ii.toString()] = new Point(ii*pointWidth*1.2-(pointWidth*0.5), gap+i*pointWidth*1.5-pointWidth, 1)
             }
         }
         return toInsert
@@ -147,8 +147,8 @@ export class MayaCreator{
     generateTriangles(){
         let {points, pointWidth, totalHeight, totalWidth} = this
         let triangles = [] as Triangle[]
-        var numberOfRows = totalHeight / pointWidth
-        var numberOfPointsPerRow = totalWidth / pointWidth
+        var numberOfRows = (totalHeight / pointWidth) + 1
+        var numberOfPointsPerRow = (totalWidth / pointWidth) + 1
 
         for(let i=0; i<numberOfRows; i++){
             for(let ii=0; ii<numberOfPointsPerRow; ii++){
@@ -184,7 +184,7 @@ export class MayaCreator{
     }
 
     alterPoint(tag: string, fraction?: number){
-            let r = this.totalGap / (fraction || 20)
+            let r = this.totalGap / (fraction || 70)
             let resultingAmount = this.direction 
                 ? this.points[tag].z + this.points[tag].z*r  
                 :  this.points[tag].z - this.points[tag].z*r
@@ -204,13 +204,16 @@ export class MayaCreator{
         })
     }
 
-    getNewNodes(){
-        // removeAllChildNodes(container)
+    getNewNodes(container?: any){
+        // if(container)removeAllChildNodes(container)
 
         let toInsert = ""
-        let higherSide = this.totalWidth > this.totalHeight ? this.totalWidth : this.totalHeight
-        let dx = higherSide / 2
-        let dy = higherSide / 2
+        let {totalWidth, totalHeight} = this
+        let widthHigher = totalWidth > totalHeight
+        let higherSide = widthHigher ? totalWidth : totalHeight
+        let centerCorrection = !widthHigher ? totalWidth / totalHeight : totalHeight / totalWidth 
+        let dx = (higherSide / 2)* (widthHigher ? centerCorrection : 1)
+        let dy = (higherSide / 2)* (widthHigher ? 1 : centerCorrection)
 
         this.alterZValues();
 

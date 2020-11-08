@@ -10,7 +10,7 @@ interface MayaProps {
   brightness: number
 }
 
-export function Maya({width, height, triangleWidth=100, color={red:175, green:50, blue:255}, brightness=0.50}: MayaProps){
+export function Maya({width, height, triangleWidth=80, color={red:175, green:50, blue:255}, brightness=0.50}: MayaProps){
 
     const index = useTick(60, 0);
     
