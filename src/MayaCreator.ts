@@ -1,6 +1,6 @@
 
 
-class Point {
+export class Point {
     x: number 
     y: number
     z: number
@@ -30,7 +30,7 @@ class Triangle{
 }
 
     
-const ProjectPoint = (point: Point, middleX: number, middleY: number) => {
+export const ProjectPoint = (point: Point, middleX: number, middleY: number) => {
 
     let newX = (point.baseX - middleX) * point.z + middleX
     let newY = (point.baseY - middleY) * point.z + middleY
@@ -43,14 +43,16 @@ const meanDepth = (triangle: Point[]) => {
     let p1 = triangle[0].z > triangle[1].z ? triangle[0].z : triangle[1].z
     return p1 > triangle[2].z ? p1 : triangle[2].z
 }
-    
+
+const range = (n: number) => Array.from(Array(n).keys());
+
 function getRandomSubsection(array: any[], subsectionAmount: number){
-    let indexes = Array.from(Array(array.length).keys());
-    for(let i=0; i < array.length - subsectionAmount; i++){
-    let randomIndex = Math.ceil(Math.random() * array.length) -1
-    indexes.splice(randomIndex, 1);
-    }
-    return indexes.map(i => array[i]).slice(0, subsectionAmount);
+    let indexes = range(array.length);
+    return range(subsectionAmount).map(el => {
+        let randomIndex = indexes[Math.floor(Math.random() * indexes.length)]
+        indexes.splice(indexes.indexOf(randomIndex), 1);
+        return array[randomIndex];
+    })
 }
 
 type Color = {red: number, blue: number, green: number}
@@ -98,31 +100,30 @@ export class MayaCreator{
         }
     }
 
-    generateShadowIndex(triangle: Triangle) {
+    generateXYDegrees(triangle: Triangle) {
         let t = triangle.points
         let top = triangle.direction === "right" ? 1 : 0;
         let down = triangle.direction === "right" ? 0 : 1;
         let side = 2
 
-        let sideHeight = t[side].z
-        let baseMidHeight = (t[down].z + t[top].z) / 2
+        let sideDepth = t[side].z
+        let baseMidDepth = (t[down].z + t[top].z) / 2
         
-        let topDiagonalHeight = (t[side].z + t[top].z) / 2
-        let downDiagonalHeight = (t[side].z + t[down].z) / 2
-
-        let topDiagonalY = (t[side].baseY + t[top].baseY) / 2
-        let downDiagonalY = (t[side].baseY + t[down].baseY) / 2        
-
-        let xHeightDif = sideHeight - baseMidHeight 
-        let yHeightDif = topDiagonalHeight - downDiagonalHeight 
+        let xHeightDif = sideDepth - baseMidDepth 
+        let yHeightDif = t[down].z - t[top].z 
 
         let triangleWidth = t[top].baseX > t[side].baseX ? t[top].baseX - t[side].baseX : t[side].baseX - t[top].baseX
-        let triangleHeight = topDiagonalY - downDiagonalY 
+        let triangleHeight = t[down].y - t[top].y 
 
-        let angleXGrade = Math.sin(xHeightDif / triangleWidth) * (180 / Math.PI)
-        let angleYGrade = Math.sin(yHeightDif / triangleHeight) * (180 / Math.PI)
+        let angleXDegree = Math.sin(xHeightDif / triangleWidth) * (180 / Math.PI)
+        let angleYDegree = Math.sin(yHeightDif / triangleHeight) * (180 / Math.PI)
 
-         return (angleXGrade*4 + angleYGrade*14) / 2
+        return [angleXDegree, angleYDegree]
+    }
+
+    generateShadowIndex(triangle: Triangle){
+        let [angleXDegree, angleYDegree] = this.generateXYDegrees(triangle)
+        return (angleXDegree*4 + angleYDegree*14) / 2
     }
 
     produceDuplicateKeys(n: number){
