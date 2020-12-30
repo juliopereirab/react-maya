@@ -32,8 +32,8 @@ class Triangle{
     
 export const ProjectPoint = (point: Point, middleX: number, middleY: number) => {
 
-    let newX = (point.baseX - middleX) * point.z + middleX
-    let newY = (point.baseY - middleY) * point.z + middleY
+    let newX = (point.baseX - middleX) * ((point.z/100)*2) + middleX
+    let newY = (point.baseY - middleY) * ((point.z/100)*2) + middleY
 
     point.x = newX;
     point.y = newY;
@@ -69,11 +69,14 @@ export class MayaCreator{
     direction: boolean
     totalGap: number
     pointsToAlter: string[]
+    baseDepth: number
 
     constructor(pointWidth: number, totalHeight: number, totalWidth: number, color: Color, brightness: number){
         this.totalHeight = totalHeight
         this.totalWidth = totalWidth
         this.pointWidth = pointWidth;
+        this.baseDepth = 50
+        this.totalGap = 2.5
         let {produceDuplicateKeys} = this
         this.tagList = [...produceDuplicateKeys(1), ...produceDuplicateKeys(2), ...produceDuplicateKeys(3)]
         this.points = this.generateCoordinates();
@@ -81,10 +84,8 @@ export class MayaCreator{
         let keys = Object.keys(this.points)
         this.pointsToAlter = getRandomSubsection(keys, Math.floor(keys.length/2.5));
         this.direction = true
-        this.totalGap = 0.1
         this.color = color
         this.brightness = brightness
-
     }
 
     randomDirection(){
@@ -123,7 +124,7 @@ export class MayaCreator{
 
     generateShadowIndex(triangle: Triangle){
         let [angleXDegree, angleYDegree] = this.generateXYDegrees(triangle)
-        return (angleXDegree*4 + angleYDegree*14) / 2
+        return (angleXDegree + angleYDegree*3.5) / 10
     }
 
     produceDuplicateKeys(n: number){
@@ -139,7 +140,7 @@ export class MayaCreator{
         for(let i=0; i<numberOfPointsPerRow; i++){
             for(let ii=0; ii<numberOfRows; ii++){
                 let gap = ii % 2 == 0 ? pointWidth/1.4 : 0
-                toInsert[this.tagList[i]+ii.toString()] = new Point(ii*pointWidth*1.2-(pointWidth*0.5), gap+i*pointWidth*1.5-pointWidth, 1)
+                toInsert[this.tagList[i]+ii.toString()] = new Point(ii*pointWidth*1.2-(pointWidth*0.5), gap+i*pointWidth*1.5-pointWidth, this.baseDepth)
             }
         }
         return toInsert
@@ -184,14 +185,14 @@ export class MayaCreator{
         return triangles.filter(t => !t.points.some(p => !p))
     }
 
-    alterPoint(tag: string, fraction?: number){
-            let r = this.totalGap / (fraction || 70)
+    alterPoint(tag: string){
+            let fractionAmount = 100 
+            let top = this.baseDepth + (this.totalGap/2)
+            let bottom = this.baseDepth - (this.totalGap/2)
+            let r = (top - bottom)/fractionAmount
             let resultingAmount = this.direction 
-                ? this.points[tag].z + this.points[tag].z*r  
-                :  this.points[tag].z - this.points[tag].z*r
-
-            let top = 1 + this.totalGap / 2
-            let bottom = 1 - this.totalGap / 2
+                ? this.points[tag].z + r
+                :  this.points[tag].z - r
 
             this.points[tag].z = 
                 resultingAmount >= top ? top 
