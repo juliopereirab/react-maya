@@ -119,7 +119,7 @@ export class MayaCreator{
         let xHeightDif = sideDepth - baseMidDepth 
         let yHeightDif = t[down].z - t[top].z 
 
-        let triangleWidth = t[top].baseX > t[side].baseX ? t[top].baseX - t[side].baseX : t[side].baseX - t[top].baseX
+        let triangleWidth = this.pointWidth * Math.sqrt(3);
         let triangleHeight = t[down].y - t[top].y 
 
         let angleXDegree = Math.sin(xHeightDif / triangleWidth) * (180 / Math.PI)
