@@ -63,8 +63,9 @@ export class MayaCreator{
     baseDepth: number
     fraction: number
     totalDepth: number
+    contrast: number
 
-    constructor(pointWidth: number, totalHeight: number, totalWidth: number, color: Color, brightness: number){
+    constructor(pointWidth: number, totalHeight: number, totalWidth: number, color: Color, brightness: number, contrast: number){
         this.totalHeight = totalHeight
         this.totalWidth = totalWidth
         this.pointWidth = pointWidth;
@@ -81,6 +82,7 @@ export class MayaCreator{
         this.direction = true
         this.color = color
         this.brightness = brightness
+        this.contrast = contrast*100 > 100 ? 100 : contrast*100 < 1 ? 1 : contrast*100;
     }
 
     ProjectPoint = (point: Point, middleX: number, middleY: number) => {
@@ -128,7 +130,7 @@ export class MayaCreator{
 
     generateShadowIndex(triangle: Triangle){
         let [angleXDegree, angleYDegree] = this.generateXYDegrees(triangle)
-        return (angleXDegree + angleYDegree*3.5) / 10
+        return (angleXDegree + angleYDegree*3.5) / (this.contrast - 99) * -1
     }
 
     produceDuplicateKeys(n: number){
