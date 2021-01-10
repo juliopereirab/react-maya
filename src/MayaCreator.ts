@@ -30,15 +30,6 @@ class Triangle{
 }
 
     
-export const ProjectPoint = (point: Point, middleX: number, middleY: number) => {
-
-    let newX = (point.baseX - middleX) * ((point.z/100)*2) + middleX
-    let newY = (point.baseY - middleY) * ((point.z/100)*2) + middleY
-
-    point.x = newX;
-    point.y = newY;
-}
-
 const meanDepth = (triangle: Point[]) => {
     let p1 = triangle[0].z > triangle[1].z ? triangle[0].z : triangle[1].z
     return p1 > triangle[2].z ? p1 : triangle[2].z
@@ -70,13 +61,17 @@ export class MayaCreator{
     totalGap: number
     pointsToAlter: string[]
     baseDepth: number
+    fraction: number
+    totalDepth: number
 
     constructor(pointWidth: number, totalHeight: number, totalWidth: number, color: Color, brightness: number){
         this.totalHeight = totalHeight
         this.totalWidth = totalWidth
         this.pointWidth = pointWidth;
-        this.baseDepth = 50
-        this.totalGap = 2.5
+        this.totalDepth = 100
+        this.baseDepth = this.totalDepth / 2
+        this.totalGap = this.totalDepth * 0.05
+        this.fraction = this.totalDepth * 0.001
         let {produceDuplicateKeys} = this
         this.tagList = [...produceDuplicateKeys(1), ...produceDuplicateKeys(2), ...produceDuplicateKeys(3)]
         this.points = this.generateCoordinates();
@@ -86,6 +81,15 @@ export class MayaCreator{
         this.direction = true
         this.color = color
         this.brightness = brightness
+    }
+
+    ProjectPoint = (point: Point, middleX: number, middleY: number) => {
+
+        let newX = (point.baseX - middleX) * ((point.z/this.totalDepth)*2) + middleX
+        let newY = (point.baseY - middleY) * ((point.z/this.totalDepth)*2) + middleY
+    
+        point.x = newX;
+        point.y = newY;
     }
 
     randomDirection(){
@@ -186,13 +190,11 @@ export class MayaCreator{
     }
 
     alterPoint(tag: string){
-            let fractionAmount = 100 
             let top = this.baseDepth + (this.totalGap/2)
             let bottom = this.baseDepth - (this.totalGap/2)
-            let r = (top - bottom)/fractionAmount
             let resultingAmount = this.direction 
-                ? this.points[tag].z + r
-                :  this.points[tag].z - r
+                ? this.points[tag].z + this.fraction
+                :  this.points[tag].z - this.fraction
 
             this.points[tag].z = 
                 resultingAmount >= top ? top 
@@ -220,7 +222,7 @@ export class MayaCreator{
         this.alterZValues();
 
         this.pointsToAlter.forEach(k => {
-            ProjectPoint(this.points[k], dx, dy)
+            this.ProjectPoint(this.points[k], dx, dy)
         });
 
         let triangles = this.generateTriangles();
