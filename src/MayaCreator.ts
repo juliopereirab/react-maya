@@ -113,19 +113,33 @@ export class MayaCreator{
         let down = triangle.direction === "right" ? 0 : 1;
         let side = 2
 
+
+        let baseMidDepth = Math.abs(t[top].z - t[down].z)
+        let triangleWidth = Math.abs(t[top].x - t[side].x)
         let sideDepth = t[side].z
-        let baseMidDepth = (t[down].z + t[top].z) / 2
+        let oppositeX = sideDepth - baseMidDepth;
+        let HypothenuseX = Math.hypot(triangleWidth, oppositeX)
+        let angleX = Math.asin(oppositeX / HypothenuseX) * (180/Math.PI)
+
+
+        let oppositeY =  t[down].z - t[top].z
+        let triangleHeight = Math.abs(t[top].y - t[down].y)
+        let HypothenuseY = Math.hypot(triangleHeight, oppositeY)
+        let angleY = Math.asin(oppositeY / HypothenuseY) * (180/Math.PI)
+
+        // let sideDepth = t[side].z
+        // let baseMidDepth = (t[down].z + t[top].z) / 2
         
-        let xHeightDif = sideDepth - baseMidDepth 
-        let yHeightDif = t[down].z - t[top].z 
+        // let xHeightDif = sideDepth - baseMidDepth 
+        // let yHeightDif = t[down].z - t[top].z 
 
-        let triangleWidth = this.pointWidth * Math.sqrt(3);
-        let triangleHeight = t[down].y - t[top].y 
+        // let triangleWidth = this.pointWidth * Math.sqrt(3);
+        // let triangleHeight = t[down].y - t[top].y 
 
-        let angleXDegree = Math.sin(xHeightDif / triangleWidth) * (180 / Math.PI)
-        let angleYDegree = Math.sin(yHeightDif / triangleHeight) * (180 / Math.PI)
+        // let angleX = Math.sin(xHeightDif / triangleWidth) * (180 / Math.PI)
+        // let angleY = Math.sin(yHeightDif / triangleHeight) * (180 / Math.PI)
 
-        return [angleXDegree, angleYDegree]
+        return [angleX, angleY]
     }
 
     generateShadowIndex(triangle: Triangle){
@@ -237,7 +251,7 @@ export class MayaCreator{
         for(var triangle of triangles){
             let t = triangle.points
             let m = this.generateShadowIndex(triangle)
-            toInsert += `<polygon points="${t[0].x},${t[0].y} ${t[1].x},${t[1].y} ${t[2].x},${t[2].y}" style="fill:rgb(${(red*brightness)+(red*brightness)*m}, ${(green*brightness)+(green*brightness)*m}, ${(blue*brightness)+(blue*brightness)*m});stroke:${strokeColour};stroke-width:1"" />`
+            toInsert += `<polygon points="${t[0].x},${t[0].y} ${t[1].x},${t[1].y} ${t[2].x},${t[2].y}" style="fill:rgb(${(red)*m}, ${(green)*m}, ${(blue)*m});stroke:${strokeColour};stroke-width:1"" />`
         }
         // for(var k of Object.keys(this.points)){
         //     let p = this.points[k]

@@ -53,28 +53,34 @@ test("check point projection (proportion depth..)", () => {
 
 
 
-test("check triangle angle (X) to be around 35 degrees", () => {
+test("check triangle angle (X) to be around 45 degrees", () => {
   let randomTriangle = m.triangles[Math.floor(Math.random()*m.triangles.length)]
 
-  randomTriangle.points[2].z = 80
+  let height = Math.abs(randomTriangle.points[2].x - randomTriangle.points[0].x);
+
+  randomTriangle.points[2].z = height
   randomTriangle.points[1].z = 0
   randomTriangle.points[0].z = 0
 
   let [angleXDegree, angleYDegree] = m.generateXYDegrees(randomTriangle)
 
-  expect(angleXDegree > 30 && angleXDegree < 38).toBe(true);
+  let positiveDegree = (angleXDegree > 0 ? angleXDegree : angleXDegree*-1)
+
+  expect(positiveDegree > 44 && positiveDegree < 46).toBe(true);
   expect(angleYDegree).toBe(0);
 })
 
-test("check triangle angle (Y) to be around 35 degrees", () => {
+test("check triangle angle (Y) to be around 45 degrees", () => {
   let randomTriangle = m.triangles[Math.floor(Math.random()*m.triangles.length)]
 
   randomTriangle.points[2].z = 0
-  randomTriangle.points[1].z = 80
+  randomTriangle.points[1].z = 120
   randomTriangle.points[0].z = 0
 
   let [angleXDegree, angleYDegree] = m.generateXYDegrees(randomTriangle)
 
-  expect(angleYDegree > 30 && angleYDegree < 38).toBe(true);
+  let positiveDegree = (angleYDegree > 0 ? angleYDegree : angleYDegree*-1)
+
+  expect(positiveDegree > 44 && positiveDegree < 46).toBe(true);
 })
 

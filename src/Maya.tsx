@@ -17,7 +17,7 @@ export function Maya({
   triangleWidth=70, 
   color={red:175, green:50, blue:255}, 
   brightness=0.50, 
-  contrast=0.75}: MayaProps){
+  contrast=0.45}: MayaProps){
 
     const index = useTick(60, 0);
     
