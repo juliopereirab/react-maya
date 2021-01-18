@@ -8,8 +8,8 @@ install on npm:
     npm install react-maya --save-dev
 
 to use with React: 
-    import { Maya } from "react-maya"
 
+    import { Maya } from "react-maya"
     <Maya height={500} width={500} contrast={0.4}/>
 
 Arguments: 
