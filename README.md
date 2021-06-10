@@ -9,12 +9,14 @@ install on npm:
 
 to use with React: 
 
+```ts
     import { Maya } from "react-maya"
     <Maya height={500} width={500} contrast={0.4}/>
+```
 
 ![alt text](https://res.cloudinary.com/dv7tqrigt/image/upload/v1611011350/react-maya.png)
 
-
+Live example: http://relaxingsudoku.surge.sh/
 
 Arguments: 
 - width (number, required).
