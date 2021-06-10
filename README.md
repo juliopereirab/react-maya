@@ -1,6 +1,7 @@
 # react-maya
+Licence: MIT.
 
-This project intends to produce dynamic 3d patterns, initially with a aesthetic purpose. So far only an hexagonal pattern has been implemented. This package is compatible with Typescript
+This project intends to produce dynamic 3d patterns, initially with a aesthetic purpose. So far only an hexagonal pattern has been implemented. This package is compatible with Typescript. 
 
 To use: 
 
